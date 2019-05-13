@@ -211,11 +211,6 @@ def onKeyboardKeyDown(key, x, y):
     if key == b'r':
         print('Restarting the game..')
         currentGameStatus = GAME_STATUS_MAINMENU
-        listOfallPlayers.clear()
-        player = PlayerObject()
-        for i in range(others):
-            listOfallPlayers.append(PlayerObject())
-        listOfallPlayers.append(player)
     if key == b'p':
         quit()
     global cameraZoom
