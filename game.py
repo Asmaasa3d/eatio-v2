@@ -11,8 +11,8 @@ from initopengl import initOpenGl
 from intractable_objects import createMapObjects
 from objects.PlayerObject import *
 
-player = PlayerObject()
-listOfallPlayers.append(player)
+player = None
+listOfallPlayers = None
 
 deltaTime = 0
 currentTime = 0
@@ -35,6 +35,24 @@ def initCamera():
 
 
 currentlyEating = []
+toBeRemovedPlayers = []
+
+
+def init_others():
+    global listOfallPlayers
+    global player
+    listOfallPlayers = [player]
+    for i in range(others):
+        obj = PlayerObject(isAI=True)
+        obj.posZ = randrange(-100, 0)
+        obj.posX = randrange(-100, 100)
+        listOfallPlayers.append(obj)
+
+
+def removePlayerIf(p):
+    global listOfallPlayers, others
+    if listOfallPlayers.__contains__(p):
+        listOfallPlayers.remove(p)
 
 
 def eatObject(playerObj, i):
@@ -54,6 +72,7 @@ def eatObject(playerObj, i):
 
 
 def draw():
+    global listOfallPlayers
     # Delta Time
     global cameraZoom
     global currentTime
@@ -105,13 +124,35 @@ def draw():
         glEnable(GL_CULL_FACE)
         glEnable(GL_DEPTH_TEST)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        player.onFrameTick(deltaTime)
+        # player.onFrameTick(deltaTime)
 
-        player.draw()
-        draw_others()
+        move_others(listOfallPlayers)
+
+        for anyPlayer in listOfallPlayers:
+            anyPlayer.onFrameTick(deltaTime)
+            anyPlayer.draw()
+
+        global toBeRemovedPlayers
+        for p in toBeRemovedPlayers:
+            if listOfallPlayers.__contains__(p) and p.isAI:
+                listOfallPlayers.remove(p)
+
+        toBeRemovedPlayers.clear()
 
         # collision
         for anyPlayer in listOfallPlayers:
+            for otherPlayer in listOfallPlayers:
+                if anyPlayer.radius > otherPlayer.radius + 1:
+                    if sqrt(((otherPlayer.posX - anyPlayer.posX) * (otherPlayer.posX - anyPlayer.posX)) + (
+                            (otherPlayer.posZ - anyPlayer.posZ) * (otherPlayer.posZ - anyPlayer.posZ))) < (
+                            otherPlayer.radius + anyPlayer.radius):
+                        print("eating other player")
+                        otherPlayer.startAnimation(
+                            Animation(AnimationParams.posX, None, anyPlayer.posX, 0.3, priority=AnimationPriority.High))
+                        otherPlayer.startAnimation(
+                            Animation(AnimationParams.posZ, None, anyPlayer.posZ, 0.3, priority=AnimationPriority.High))
+                        otherPlayer.startAnimation(DeltaAnimation(AnimationParams.posY, -5, 0.3, priority=AnimationPriority.High,
+                                                                  onAnimationFinished=lambda: toBeRemovedPlayers.append(otherPlayer)))
             for i in intractableObjects:
                 if isCollided(anyPlayer, i):
                     if anyPlayer.area > i.area:
@@ -227,6 +268,10 @@ def onMouseKeyDown(button, state, x, y):
         global currentGameScore
         currentGameScore = 0
         intractableObjects = createMapObjects()
+        global player
+        global listOfallPlayers
+        player = PlayerObject(isAI=False)
+        init_others()
 
 
 initOpenGl(draw, onMouseKeyDown, onKeyboardKeyDown, onSpecialKeyDown)

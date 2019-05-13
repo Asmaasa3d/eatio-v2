@@ -21,7 +21,7 @@ class PlayerObject(GameObject):
 
     def __init__(self, posX=randrange(-100, 100), posY=0, posZ=randrange(-100, 0), scaleX=1, scaleY=1, scaleZ=1, rotY=0,
                  radius=1, r=0, g=1,
-                 b=0):
+                 b=0, isAI=True):
         super().__init__(posX, posY, posZ, scaleX, scaleY, scaleZ, rotY)
         self.radius = radius
         self.xdis = randrange(-100, 100)
@@ -36,6 +36,7 @@ class PlayerObject(GameObject):
         self.currentGameScore = 0
         self.refrenceGameScore = 0
         self.toMakeBig = 15
+        self.isAI = isAI
 
     def update_area(self):
         self.area = pi * self.radius * self.radius * .5
@@ -72,69 +73,56 @@ class PlayerObject(GameObject):
 
 
 others = 3
-listOfallPlayers = []
-
-for i in range(others):
-    listOfallPlayers.append(PlayerObject())
-
-for i in range(others):
-    listOfallPlayers.append(PlayerObject())
-    listOfallPlayers[i].posZ = randrange(-100, 0)
-    listOfallPlayers[i].posX = randrange(-100, 100)
 
 
-def draw_others():
-    global others
-    global listOfallPlayers
-    for i in range(others):
-        if listOfallPlayers[i].posX == listOfallPlayers[i].xdis and listOfallPlayers[i].posZ == listOfallPlayers[
-            i].zdis:
-            listOfallPlayers[i].xdis = randrange(-100, 100)
-            listOfallPlayers[i].zdis = randrange(-100, 0)
-        else:
-            if listOfallPlayers[i].posX < listOfallPlayers[i].xdis:
-                listOfallPlayers[i].posX += .5
-                if listOfallPlayers[i].posZ < listOfallPlayers[i].zdis:
-                    listOfallPlayers[i].posZ += .5
-                    listOfallPlayers[i].rotY = 45
-                    listOfallPlayers[i].arrowPosX = listOfallPlayers[i].radius + .2
-                    listOfallPlayers[i].arrowPosZ = listOfallPlayers[i].radius + .2
-                elif listOfallPlayers[i].posZ > listOfallPlayers[i].zdis:
-                    listOfallPlayers[i].posZ -= .5
-                    listOfallPlayers[i].rotY = 135
-                    listOfallPlayers[i].arrowPosX = listOfallPlayers[i].radius + .2
-                    listOfallPlayers[i].arrowPosZ = -listOfallPlayers[i].radius - .2
-                else:
-                    listOfallPlayers[i].rotY = 90
-                    listOfallPlayers[i].arrowPosX = listOfallPlayers[i].radius + .2
-                    listOfallPlayers[i].arrowPosZ = 0
-
-            elif listOfallPlayers[i].posX > listOfallPlayers[i].xdis:
-                listOfallPlayers[i].posX -= .5
-                if listOfallPlayers[i].posZ > listOfallPlayers[i].zdis:
-                    listOfallPlayers[i].posZ -= .5
-                    listOfallPlayers[i].rotY = 225
-                    listOfallPlayers[i].arrowPosX = -listOfallPlayers[i].radius - .2
-                    listOfallPlayers[i].arrowPosZ = -listOfallPlayers[i].radius - .2
-                elif listOfallPlayers[i].posZ < listOfallPlayers[i].zdis:
-                    listOfallPlayers[i].posZ += .5
-                    listOfallPlayers[i].rotY = -45
-                    listOfallPlayers[i].arrowPosX = -listOfallPlayers[i].radius - .2
-                    listOfallPlayers[i].arrowPosZ = listOfallPlayers[i].radius + .2
-                else:
-                    listOfallPlayers[i].rotY = - 90
-                    listOfallPlayers[i].arrowPosX = -listOfallPlayers[i].radius - .2
-                    listOfallPlayers[i].arrowPosZ = 0
+def move_others(listOfallPlayers):
+    for obj in listOfallPlayers:
+        if obj.isAI:
+            if obj.posX == obj.xdis and obj.posZ == obj.zdis:
+                obj.xdis = randrange(-100, 100)
+                obj.zdis = randrange(-100, 0)
             else:
-                if listOfallPlayers[i].posZ > listOfallPlayers[i].zdis:
-                    listOfallPlayers[i].posZ -= .5
-                    listOfallPlayers[i].rotY = 180
-                    listOfallPlayers[i].arrowPosX = 0
-                    listOfallPlayers[i].arrowPosZ = -listOfallPlayers[i].radius - .2
-                elif listOfallPlayers[i].posZ < listOfallPlayers[i].zdis:
-                    listOfallPlayers[i].posZ += .5
-                    listOfallPlayers[i].rotY = 0
-                    listOfallPlayers[i].arrowPosX = 0
-                    listOfallPlayers[i].arrowPosZ = listOfallPlayers[i].radius + .2
+                if obj.posX < obj.xdis:
+                    obj.posX += .5
+                    if obj.posZ < obj.zdis:
+                        obj.posZ += .5
+                        obj.rotY = 45
+                        obj.arrowPosX = obj.radius + .2
+                        obj.arrowPosZ = obj.radius + .2
+                    elif obj.posZ > obj.zdis:
+                        obj.posZ -= .5
+                        obj.rotY = 135
+                        obj.arrowPosX = obj.radius + .2
+                        obj.arrowPosZ = -obj.radius - .2
+                    else:
+                        obj.rotY = 90
+                        obj.arrowPosX = obj.radius + .2
+                        obj.arrowPosZ = 0
 
-        listOfallPlayers[i].draw()
+                elif obj.posX > obj.xdis:
+                    obj.posX -= .5
+                    if obj.posZ > obj.zdis:
+                        obj.posZ -= .5
+                        obj.rotY = 225
+                        obj.arrowPosX = -obj.radius - .2
+                        obj.arrowPosZ = -obj.radius - .2
+                    elif obj.posZ < obj.zdis:
+                        obj.posZ += .5
+                        obj.rotY = -45
+                        obj.arrowPosX = -obj.radius - .2
+                        obj.arrowPosZ = obj.radius + .2
+                    else:
+                        obj.rotY = - 90
+                        obj.arrowPosX = -obj.radius - .2
+                        obj.arrowPosZ = 0
+                else:
+                    if obj.posZ > obj.zdis:
+                        obj.posZ -= .5
+                        obj.rotY = 180
+                        obj.arrowPosX = 0
+                        obj.arrowPosZ = -obj.radius - .2
+                    elif obj.posZ < obj.zdis:
+                        obj.posZ += .5
+                        obj.rotY = 0
+                        obj.arrowPosX = 0
+                        obj.arrowPosZ = obj.radius + .2
