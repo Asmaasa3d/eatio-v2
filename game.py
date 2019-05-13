@@ -49,12 +49,6 @@ def init_others():
         listOfallPlayers.append(obj)
 
 
-def removePlayerIf(p):
-    global listOfallPlayers, others
-    if listOfallPlayers.__contains__(p):
-        listOfallPlayers.remove(p)
-
-
 def eatObject(playerObj, i):
     global currentlyEating
     if not currentlyEating.__contains__(i):
@@ -132,15 +126,18 @@ def draw():
             anyPlayer.onFrameTick(deltaTime)
             anyPlayer.draw()
 
+        # player x player collision remove
         global toBeRemovedPlayers
         for p in toBeRemovedPlayers:
             if listOfallPlayers.__contains__(p) and p.isAI:
                 listOfallPlayers.remove(p)
-
         toBeRemovedPlayers.clear()
+        # end of # player x player collision remove
 
         # collision
         for anyPlayer in listOfallPlayers:
+
+            # check for player x player collision
             for otherPlayer in listOfallPlayers:
                 if anyPlayer.radius > otherPlayer.radius + 1:
                     if sqrt(((otherPlayer.posX - anyPlayer.posX) * (otherPlayer.posX - anyPlayer.posX)) + (
@@ -153,6 +150,8 @@ def draw():
                             Animation(AnimationParams.posZ, None, anyPlayer.posZ, 0.3, priority=AnimationPriority.High))
                         otherPlayer.startAnimation(DeltaAnimation(AnimationParams.posY, -5, 0.3, priority=AnimationPriority.High,
                                                                   onAnimationFinished=lambda: toBeRemovedPlayers.append(otherPlayer)))
+
+            # end of #check for player x player collision
             for i in intractableObjects:
                 if isCollided(anyPlayer, i):
                     if anyPlayer.area > i.area:
