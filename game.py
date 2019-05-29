@@ -174,7 +174,7 @@ def draw():
         for o in intractableObjects:
             o.onFrameTick(deltaTime)
             o.draw()
-        cameraZoom = 3 * player.radius
+        cameraZoom = 2 * player.radius
 
     if GAME_STATUS_COUNTDOWN <= currentGameStatus < GAME_STATUS_PLAYING:
         glClearColor(0, 0, 0, 1)
