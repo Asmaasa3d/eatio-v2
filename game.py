@@ -41,13 +41,13 @@ toBeRemovedPlayers = []
 def init_others():
     global listOfallPlayers
     global player
-    listOfallPlayers = [player]
+    listOfallPlayers = []
     for i in range(others):
         obj = PlayerObject(isAI=True)
         obj.posZ = randrange(-100, 0)
         obj.posX = randrange(-100, 100)
         listOfallPlayers.append(obj)
-
+    listOfallPlayers.append(player)
 
 def eatObject(playerObj, i):
     global currentlyEating
